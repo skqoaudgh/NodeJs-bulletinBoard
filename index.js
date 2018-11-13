@@ -27,14 +27,19 @@ const users = [
     }
 ]
 
+// 사용자가 입력한 ID가 데이터베이스에 저장되어 있는지 검사하여 true/false를 반환하는 함수
+function isIdExisted(user_id) {
+    return users.find( v => (v.user_id === user_id));
+}
+
 // 사용자가 입력한 ID, PW가 데이터베이스에 저장되어 있는지 검사하여 true/false를 반환하는 함수
 function isRegistered(user_id, user_pwd) {
-    return users.find( v => (v.user_id === user_id &&  bcrypt.compareSync(user_pwd, v.user_pwd) ) );
+    return users.find( v => (v.user_id === user_id &&  bcrypt.compareSync(user_pwd, v.user_pwd)));
 }
 // 해당 사용자의 고유한 Index(session.sid)를 반환하는 함수
 function getUserIndex(user_id, user_pwd) {
  
-    return users.findIndex( v => (v.user_id === user_id && bcrypt.compareSync(user_pwd, v.user_pwd)) );
+    return users.findIndex( v => (v.user_id === user_id && bcrypt.compareSync(user_pwd, v.user_pwd)));
 }
 
 app.get('/', (req, res) => {
@@ -65,9 +70,10 @@ app.get('/logout', (req, res) => {
 app.get('/join', (req, res) => {
     res.render('join');
 });
+
 app.post('/join', (req, res) => {
     const body = req.body;
-    if(!isRegistered(body.user_id, body.user_pwd)) { // 동일한 아이디가 존재하는지 검사하는 함수 필요
+    if(!isIdExisted(body.user_id)) { // 동일한 아이디가 존재하는지 검사하는 함수 필요
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(body.user_pwd, salt);
         users.push({
@@ -76,7 +82,8 @@ app.post('/join', (req, res) => {
             user_nickname: body.user_nickname
         });
     	res.redirect('/login');
-    } else {
+    } 
+    else {
     	res.send('이미 존재함');
     }
 });
