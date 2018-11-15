@@ -31,22 +31,25 @@ route.get('/', (req, res) => {
     const sess = req.session;
     User.findOne({_id: sess.user_uid}, {nick:1},  function(error, users){
         var tmp = new User(users);
-        res.render('main', {
+        res.render('form', {
             nickname: sess.user_uid+1 ? tmp.nick : ''
-        });       
+        });
     })
 });
 
+/*
 route.get('/login', (req, res) => {
-    res.render('login');
+    res.render('form');
 });
+*/
+
 route.post('/login', (req, res) => {
     const body = req.body;
     if(tryLogin(body.user_id, body.user_pwd)) {
         User.findOne({id: body.user_id}, function(err,user) {
             if(err) console.log(err);
             req.session.user_uid = user._id;
-            res.redirect('/');
+            res.redirect('/main');
         }); 
     } 
     else {
@@ -59,9 +62,11 @@ route.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
+/*
 route.get('/regist', (req, res) => {
     res.render('regist');
 });
+*/
 
 route.post('/regist', (req, res) => {
     const body = req.body;

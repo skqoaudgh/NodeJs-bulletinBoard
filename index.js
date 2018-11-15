@@ -6,8 +6,9 @@ var express     = require('express');
     mongoose    = require('mongoose');
 
 // [APP CONFIG]
-app.set('views', __dirname + '/view');
 app.set('view engine', 'ejs');
+app.set('views', __dirname + '/view');
+app.use("/view",express.static(__dirname + "/view"));
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({
@@ -26,9 +27,11 @@ db.once('open', function(){
 var conn = mongoose.connect('mongodb://localhost/db', { useNewUrlParser: true });
 
 // [VIEW ROUTER]
-var route = require('./login');
-app.use('/',route)
+var login_route = require('./login');
+app.use('/',login_route);
 
+var main_route = require('./main/routes');
+app.use('/main',main_route);
 
 // [RUN SERVER]
 var server = app.listen(7777, function(){
