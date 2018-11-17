@@ -1,8 +1,17 @@
-$('.message a').click(function(){
+var erorr_msg = document.getElementById('error');
+
+var _error_code = document.getElementById('get_error');
+var error_code = _error_code.innerHTML;
+console.log(error_code);
+if(error_code == 1 || error_code == 2) {
     $('form').animate({height: "toggle", opacity: "toggle"},"slow");
+}
+
+$('.message span').click(function(){
+    $('form').animate({height: "toggle", opacity: "toggle"},"slow");
+    erorr_msg.innerHTML = ' ';
  });
 
- var erorr_msg = document.getElementById('error');
  function Regcheck() {
     var exp_email = /^[-A-Za-z0-9_]+[-A-Za-z0-9_.]*[@]{1}[-A-Za-z0-9_]+[-A-Za-z0-9_.]*[.]{1}[A-Za-z]{1,5}$/;
     var exp_name = /^[A-za-z0-9]/g;

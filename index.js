@@ -1,7 +1,7 @@
 // [EXPRESS CONFIG]
 var express     = require('express');
     app         = express();
-    bodyParser = require('body-parser');
+    bodyParser  = require('body-parser');
     session     = require('express-session');
     mongoose    = require('mongoose');
     //formidable = require('express-formidable');
