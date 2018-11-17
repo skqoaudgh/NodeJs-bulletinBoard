@@ -5,6 +5,7 @@ var userSchema = new Schema({
     id: String,
     pw: String,
     nick: String,
+    email: String,
     registed_date: { type: Date, default: Date.now  }
 });
 

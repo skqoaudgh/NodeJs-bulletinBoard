@@ -3,7 +3,6 @@ var express    = require('express');
     route      = express.Router();
     moment     = require('moment');
 
-
 // TIMEZONE CINFIG
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
@@ -37,16 +36,10 @@ route.get('/', (req, res) => {
     })
 });
 
-/*
-route.get('/login', (req, res) => {
-    res.render('form');
-});
-*/
-
 route.post('/login', (req, res) => {
     const body = req.body;
-    if(tryLogin(body.user_id, body.user_pwd)) {
-        User.findOne({id: body.user_id}, function(err,user) {
+    if(tryLogin(body.login_id, body.login_pwd)) {
+        User.findOne({id: body.login_id}, function(err,user) {
             if(err) console.log(err);
             req.session.user_uid = user._id;
             res.redirect('/main');
@@ -62,23 +55,19 @@ route.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-/*
-route.get('/regist', (req, res) => {
-    res.render('regist');
-});
-*/
-
 route.post('/regist', (req, res) => {
     const body = req.body;
-    isExisted(body.user_id, function(flag) {
+    isExisted(body.reg_id, function(flag) {
         if(flag) {
             var user = new User();
             const salt = bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(body.user_pwd, salt);
+            const hash = bcrypt.hashSync(body.reg_pwd, salt);
     
-            user.id = body.user_id;
+            console.log(body.reg_id + " " + body.reg_pwd);
+            user.id = body.reg_id;
             user.pw = hash;
-            user.nick = body.user_nickname;
+            user.nick = body.reg_nick;
+            user.email = body.reg_email;
             user.registed_date = new Date(moment().format('YYYY-MM-DD/HH:mm:ss'));
     
             user.markModified('user')
@@ -88,7 +77,8 @@ route.post('/regist', (req, res) => {
                     res.send('예외오류 발생');
                     return;
                 }
-                res.redirect('/login');
+
+                res.redirect('/reg_succed');
             });
         }
         else {
@@ -97,4 +87,7 @@ route.post('/regist', (req, res) => {
     })
 });
 
+route.get('/reg_succed', (req, res) => {
+    res.render('reg_succed');
+});
 module.exports = route;

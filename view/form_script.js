@@ -1,17 +1,24 @@
 $('.message a').click(function(){
     $('form').animate({height: "toggle", opacity: "toggle"},"slow");
  });
- function check() {
+
+ var erorr_msg = document.getElementById('error');
+ function Regcheck() {
     var exp_email = /^[-A-Za-z0-9_]+[-A-Za-z0-9_.]*[@]{1}[-A-Za-z0-9_]+[-A-Za-z0-9_.]*[.]{1}[A-Za-z]{1,5}$/;
     var exp_name = /^[A-za-z0-9]/g;
+    var exp_nick = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|\*]+$/;
 
-    var erorr_msg = document.getElementById('error');
     var email = document.getElementById('reg_email');
     var name = document.getElementById('reg_id');
+    var nick = document.getElementById('reg_nick');
     var password = document.getElementById('reg_pwd');
 
     if(exp_name.test(name.value) == false) {
         erorr_msg.innerHTML = '아이디에는 숫자와 영어만 들어갈 수 있습니다.';
+        return false;
+    }
+    else if(exp_nick.test(nick.value) == false) {
+        erorr_msg.innerHTML = '닉네임에는 숫자와 영어만 들어갈 수 있습니다.';
         return false;
     }
     else if(password.value.length < 6) {

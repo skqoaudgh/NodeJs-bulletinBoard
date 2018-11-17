@@ -11,16 +11,17 @@
         <div class="login-page">
             <div class="form">
                 <p id="error"></p>
-                <form class="register-form" action="/regist" method="post" onsubmit="return check()">
-                    <input type="text" id="reg_id" placeholder="name"/>
-                    <input type="password" id="reg_pwd" placeholder="password"/>
-                    <input type="text" id="reg_email" placeholder="email address"/>
+                <form class="register-form" action="/regist" method="post" onsubmit="return Regcheck()">
+                    <input type="text" id="reg_id" name="reg_id" placeholder="name"/>
+                    <input type="text" id="reg_nick" name="reg_nick" placeholder="nickname"/>
+                    <input type="password" id="reg_pwd" name="reg_pwd" placeholder="password"/>
+                    <input type="text" id="reg_email" name="reg_email" placeholder="email address"/>
                     <button>create</button>
                     <p class="message">이미 가입하셨나요? <a href="#">로그인</a></p>
                 </form>
                 <form class="login-form" action="/login" method="post">
-                    <input type="text" id="login_id" placeholder="username"/>
-                    <input type="password" id="login_pwd" placeholder="password"/>
+                    <input type="text" id="login_id" name="login_id" placeholder="username"/>
+                    <input type="password" id="login_pwd" name="login_pwd" placeholder="password"/>
                     <button>login</button>
                     <p class="message">아직 가입하지 않으셨나요? <a href="#">회원가입</a></p>
                 </form>
