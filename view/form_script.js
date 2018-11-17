@@ -2,7 +2,6 @@ var erorr_msg = document.getElementById('error');
 
 var _error_code = document.getElementById('get_error');
 var error_code = _error_code.innerHTML;
-console.log(error_code);
 if(error_code == 1 || error_code == 2) {
     $('form').animate({height: "toggle", opacity: "toggle"},"slow");
 }

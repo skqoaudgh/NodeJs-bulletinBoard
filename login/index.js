@@ -14,11 +14,12 @@ var User = require('../db/models/user');
 function tryLogin(user_id, user_pwd, callback) {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(user_pwd, salt);
-    User.find({id: user_id, pw: hash}, function(err, user) {
+    User.find({id: user_id}, function(err, user) {
         var result = true;
         if(user.length == 0) result = false;
         if(err) result = false;
-        callback(result);
+        if(!bcrypt.compareSync(user_pwd, hash)) result = false;
+        callback(result, user._id);
     });
 }
 
@@ -52,16 +53,16 @@ route.get('/', (req, res) => {
 
 route.post('/login', (req, res) => {
     const body = req.body;
-    tryLogin(body.login_id, body.login_pwd, function(flag) {
+    tryLogin(body.login_id, body.login_pwd, function(flag, id) {
         if(flag)
         {
-            req.session.user_uid = user._id;
-            res.redirect('/main');
+            req.session.user_uid = id;
+            res.render('main');
         }
         else {
             res.render('form', {error: '3'});
         }
-    })
+    });
 });
 
 route.get('/logout', (req, res) => {
@@ -88,7 +89,6 @@ route.post('/regist', (req, res) => {
                     user.markModified('user')
                     user.save(function(error){
                         if(error){
-                            console.error(error);
                             res.send('예외오류 발생');
                             return;
                         }
