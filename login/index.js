@@ -19,7 +19,7 @@ function tryLogin(user_id, user_pwd, callback) {
         if(user.length == 0) result = false;
         if(err) result = false;
         if(!bcrypt.compareSync(user_pwd, hash)) result = false;
-        callback(result, user._id);
+        callback(result, user[0]._id);
     });
 }
 
@@ -43,12 +43,22 @@ function isNickExisted(user_nick, callback) {
 
 route.get('/', (req, res) => {
     const sess = req.session;
-    User.findOne({_id: sess.user_uid}, {nick:1},  function(error, users){
-        var tmp = new User(users);
+    if(!sess.user_uid)
         res.render('form', {
             error : '0'
         });
-    })
+    else
+        res.redirect('main');
+});
+
+route.get('/main', (req, res) => {
+    const sess = req.session;
+    if(!sess.user_uid)
+        res.render('form', {
+            error : '0'
+        });
+    else
+        res.render('main');
 });
 
 route.post('/login', (req, res) => {
@@ -57,7 +67,7 @@ route.post('/login', (req, res) => {
         if(flag)
         {
             req.session.user_uid = id;
-            res.render('main');
+            res.redirect('main');
         }
         else {
             res.render('form', {error: '3'});
