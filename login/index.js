@@ -3,6 +3,8 @@ var express    = require('express');
     route      = express.Router();
     moment     = require('moment');
 
+
+
 // TIMEZONE CINFIG
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
@@ -12,14 +14,18 @@ var User = require('../db/models/user');
 
 // 사용자가 입력한 ID, PW가 데이터베이스에 저장되어 있는지 검사하여 true/false를 반환하는 함수
 function tryLogin(user_id, user_pwd, callback) {
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(user_pwd, salt);
     User.find({id: user_id}, function(err, user) {
         var result = true;
         if(user.length == 0) result = false;
         if(err) result = false;
-        if(!bcrypt.compareSync(user_pwd, hash)) result = false;
-        callback(result, user[0]._id);
+        if(!bcrypt.compareSync(user_pwd, user[0].pw)) result = false;
+
+        console.log('입력: ' + user_id + ' ' + user_pwd);
+        console.log('결과: ' + result);
+        if(result)
+            callback(user[0]);
+        else
+            callback('');
     });
 }
 
@@ -63,10 +69,11 @@ route.get('/main', (req, res) => {
 
 route.post('/login', (req, res) => {
     const body = req.body;
-    tryLogin(body.login_id, body.login_pwd, function(flag, id) {
-        if(flag)
+    tryLogin(body.login_id, body.login_pwd, function(user) {
+        console.log('user: ' + user);
+        if(user)
         {
-            req.session.user_uid = id;
+            req.session.user_uid = user._id;
             res.redirect('main');
         }
         else {
