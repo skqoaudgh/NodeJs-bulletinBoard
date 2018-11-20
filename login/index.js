@@ -19,9 +19,6 @@ function tryLogin(user_id, user_pwd, callback) {
         if(user.length == 0) result = false;
         if(err) result = false;
         if(!bcrypt.compareSync(user_pwd, user[0].pw)) result = false;
-
-        console.log('입력: ' + user_id + ' ' + user_pwd);
-        console.log('결과: ' + result);
         if(result)
             callback(user[0]);
         else
@@ -29,6 +26,7 @@ function tryLogin(user_id, user_pwd, callback) {
     });
 }
 
+// 파라미터로 넘어온 아이디가 DB에 존재하는지 검사하여 true/false를 반환하는 함수
 function isIDExisted(user_id, callback) {
     User.find({id: user_id}, function(err, user) {
         var result = true;
@@ -38,6 +36,7 @@ function isIDExisted(user_id, callback) {
     });
 }
 
+// 파라미터로 넘어온 닉네임이 DB에 존재하는지 검사하여 true/false를 반환하는 함수
 function isNickExisted(user_nick, callback) {
     User.find({nick: user_nick}, function(err, user) {
         var result = true;
@@ -126,4 +125,5 @@ route.post('/regist', (req, res) => {
 route.get('/reg_succed', (req, res) => {
     res.render('reg_succed');
 });
+
 module.exports = route;
