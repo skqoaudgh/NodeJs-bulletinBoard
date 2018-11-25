@@ -14,20 +14,22 @@
             <div class="form">
                 <p id="error">
                     <%  if(error == 1) { %>
-                        이미 사용중인 아이디입니다.
+                        이미 사용중인 아이디입니다. 다른 아이디를 입력해주세요.
                     <% } else if(error == 2) { %>
-                        이미 사용중인 닉네임입니다.
+                        이미 사용중인 닉네임입니다. 다른 닉네임을 입력해주세요.
                     <% } else if(error == 3) { %>
                         입력한 아이디와 비밀번호가 일치하지 않습니다. 아이디 또는 비밀번호를 다시 한번 입력해 주세요. 
+                    <% } else if(error == 4) { %>
+                        이미 사용중인 이메일입니다. 다른 이메일을 입력해주세요.
+                    <% } else if(error == 5) { %>
+                        이메일 인증이 되지 않은 계정입니다. 인증 메일을 재전송하였습니다.
                     <% } %>
                 </p>
-                <form class="register-form" action="/regist" method="post" onsubmit="return Regcheck()">
+                <form id="myform" class="register-form" action="/regist" method="post" onsubmit="return Regcheck()">
                     <input type="text" id="reg_id" name="reg_id" placeholder="name"/>
                     <input type="text" id="reg_nick" name="reg_nick" placeholder="nickname"/>
                     <input type="password" id="reg_pwd" name="reg_pwd" placeholder="password"/>
                     <input type="text" id="reg_email" name="reg_email" placeholder="email address"/>
-                    <input type="button" id="reg_verify" name="reg_verify" value="VERIFY"/>
-                    <input type="text" id="reg_num" name="reg_num" placeholder="number"/>
                     <button>create</button>
                     <p class="message">이미 가입하셨나요? <span>로그인</span></p>
                 </form>
@@ -39,6 +41,7 @@
                 </form>
             </div>
         </div>
+        <iframe name='temp_frame' width='0' height='0' frameborder='0'></iframe>
         <script type="text/javascript" src="/view/form_script.js"></script>
     </body>
 </html>

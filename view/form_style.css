@@ -39,16 +39,7 @@
     transition: all 0.3 ease;
     cursor: pointer;
   }
-
-  #reg_email {
-    width: 74%;
-    margin-right: 3px;
-  }
-
-  input[type=button] {
-    width: 24%;
-  }
-
+  
   .form button:hover,.form button:active,.form button:focus {
     background: #43A047;
   }
