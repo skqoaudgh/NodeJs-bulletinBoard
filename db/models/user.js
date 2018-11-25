@@ -6,6 +6,7 @@ var userSchema = new Schema({
     pw: String,
     nick: String,
     email: String,
+    confirmed: Boolean,
     registed_date: { type: Date, default: Date.now  }
 });
 

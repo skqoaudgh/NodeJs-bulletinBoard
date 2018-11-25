@@ -2,8 +2,7 @@ var express    = require('express');
     bcrypt     = require('bcrypt-nodejs');
     route      = express.Router();
     moment     = require('moment');
-
-
+    nodemailer = require('nodemailer');
 
 // TIMEZONE CINFIG
 require('moment-timezone');
@@ -46,6 +45,35 @@ function isNickExisted(user_nick, callback) {
     });
 }
 
+// 파라미터로 넘어온 이메일로 인증 메일을 발송하는 함수
+function SendMail(email) {
+    const salt = bcrypt.genSaltSync(10);
+    const hashToken = bcrypt.hashSync("MAKEUSTOKEN", salt);
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'makeus.noreply@gmail.com',
+            pass: '23468917a!'
+        }
+    });
+ 
+    let mailOptions = {
+        from: 'makeus.noreply@gmail.com',
+        to: email ,
+        subject: '메이커스 계정 인증',
+        html: '<p>아래의 링크를 클릭해주세요 !</p>' + "<a href='http://localhost:7777/authmail/?email=" + email + "&token="+ hashToken + "'>인증하기</a>"
+    };
+ 
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
 route.get('/', (req, res) => {
     const sess = req.session;
     if(!sess.user_uid)
@@ -69,11 +97,16 @@ route.get('/main', (req, res) => {
 route.post('/login', (req, res) => {
     const body = req.body;
     tryLogin(body.login_id, body.login_pwd, function(user) {
-        console.log('user: ' + user);
         if(user)
         {
-            req.session.user_uid = user._id;
-            res.redirect('main');
+            if(!user.confirmed) {
+                res.render('form', {error: '5'});
+                SendMail(user.email);
+            }
+            else {
+                req.session.user_uid = user._id;
+                res.redirect('main');
+            }
         }
         else {
             res.render('form', {error: '3'});
@@ -100,6 +133,7 @@ route.post('/regist', (req, res) => {
                     user.pw = hash;
                     user.nick = body.reg_nick;
                     user.email = body.reg_email;
+                    user.confirmed = false;
                     user.registed_date = new Date(moment().format('YYYY-MM-DD/HH:mm:ss'));
             
                     user.markModified('user')
@@ -108,8 +142,11 @@ route.post('/regist', (req, res) => {
                             res.send('예외오류 발생');
                             return;
                         }
-                        res.redirect('/reg_succed');
+                        res.render('reg_succed', {user_email: user.email});
                     });
+
+                    SendMail(user.email);
+
                 }
                 else {
                     res.render('form', {error: '2'});
@@ -124,6 +161,60 @@ route.post('/regist', (req, res) => {
 
 route.get('/reg_succed', (req, res) => {
     res.render('reg_succed');
+});
+
+route.post('/requestMail', (req, res) => {
+    const salt = bcrypt.genSaltSync(10);
+    const hashToken = bcrypt.hashSync("MAKEUSTOKEN", salt);
+
+    let email = req.body.reg_email;
+ 
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'makeus.noreply@gmail.com',
+            pass: '23468917a!'
+        }
+    });
+ 
+    let mailOptions = {
+        from: 'makeus.noreply@gmail.com',
+        to: email ,
+        subject: '메이커스 계정 인증',
+        html: '<p>아래의 링크를 클릭해주세요 !</p>' + "<a href='http://localhost:7777/authmail/?email=" + email + "&token='" + hashToken + "'>인증하기</a>"
+    };
+
+    console.log(mailOptions);
+ 
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+});
+
+route.get('/authmail', (req, res) => {
+    let mail = req.query.email;
+    let token = req.query.token;
+
+    if(bcrypt.compareSync("MAKEUSTOKEN",token))
+    {
+        User.findOne({email:mail}, function(err, user) {
+            if(err) return console.log(err);
+            user.confirmed = true;
+            user.save(function(error){
+                if(error) return console.log(error);
+            });
+        });
+    }
+    res.redirect('/mailauth');
+});
+
+route.get('/mailauth', (req, res) => {
+    res.render('mailauth');
 });
 
 module.exports = route;
